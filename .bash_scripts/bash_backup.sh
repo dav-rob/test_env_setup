@@ -120,10 +120,16 @@ process_directory() {
     local in_dry_run="$3"
     local changes_detected=0
     
+    # Save current directory
+    local current_dir=$(pwd)
+    
+    # Change to source directory
+    cd "$source"
+    
     # Use find to get all regular files in the directory
     while IFS= read -r -d '' file; do
         # Get clean paths
-        local relative_path=$(normalize_path "${file#$source/}")
+        local relative_path=$(normalize_path "$file")
         local source_file="$source/$relative_path"
         local dest_file="$dest/$relative_path"
         
@@ -139,7 +145,10 @@ process_directory() {
             fi
             changes_detected=1
         fi
-    done < <(find "$source" -type f -print0)
+    done < <(find . -type f -print0)
+    
+    # Return to original directory
+    cd "$current_dir"
     
     if [ $changes_detected -eq 1 ]; then
         ((DIR_CHANGES++))
@@ -155,21 +164,38 @@ check_deletions() {
     # Build array of current file paths and their full paths
     for item in "${FILES_TO_BACKUP[@]}"; do
         if [ -d "$item" ]; then
+            # Save current directory
+            local current_dir=$(pwd)
+            
+            # Change to source directory
+            cd "$item"
+            
             # Get the directory name relative to HOME
             local dir_name=$(normalize_path "${item#$HOME/}")
+            
+            # Use find to get all regular files in the directory
             while IFS= read -r -d '' file; do
                 # Get clean paths relative to the directory
-                local relative_path=$(normalize_path "${file#$item/}")
+                local relative_path=$(normalize_path "$file")
                 # Add the directory prefix to match backup structure
                 local backup_path="$dir_name/$relative_path"
                 current_paths+=("$backup_path")
                 [ $VERBOSE -eq 1 ] && log_message "Adding to current paths: $backup_path"
-            done < <(find "$item" -type f -print0)
+            done < <(find . -type f -print0)
+            
+            # Return to original directory
+            cd "$current_dir"
         else
             current_files+=("$(basename "$item")")
         fi
     done
 
+    # Save current directory
+    local current_dir=$(pwd)
+    
+    # Change to backup directory
+    cd "$BACKUP_DIR"
+    
     # Check backup directory recursively for files that should be deleted
     while IFS= read -r -d '' file; do
         # Skip .git files
@@ -178,7 +204,7 @@ check_deletions() {
         fi
 
         # Get clean paths relative to backup directory
-        local relative_path=$(normalize_path "${file#$BACKUP_DIR/}")
+        local relative_path=$(normalize_path "$file")
         local basename=$(basename "$file")
         local found=0
 
@@ -210,7 +236,10 @@ check_deletions() {
             fi
             CHANGES_MADE=1
         fi
-    done < <(find "$BACKUP_DIR" -type f -print0)
+    done < <(find . -type f -print0)
+    
+    # Return to original directory
+    cd "$current_dir"
 }
 
 # Function to backup a file or directory
