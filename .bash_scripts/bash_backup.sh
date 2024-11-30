@@ -6,6 +6,15 @@ FILES_TO_BACKUP=()
 VERBOSE=0
 DRY_RUN=0
 
+# Common ignore patterns
+IGNORED_PATTERNS=(
+    ".DS_Store"
+    "*.swp"
+    "*~"
+    "Thumbs.db"
+    ".git"
+)
+
 # Parse all arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -113,6 +122,22 @@ files_differ() {
     return 1
 }
 
+# Function to check if a file matches any ignore pattern
+should_ignore() {
+    local file="$1"
+    local basename=$(basename "$file")
+    
+    for pattern in "${IGNORED_PATTERNS[@]}"; do
+        # Convert glob pattern to regex
+        pattern=$(echo "$pattern" | sed 's/\./\\./g' | sed 's/\*/\.\*/g')
+        if [[ "$basename" =~ ^$pattern$ ]]; then
+            [ $VERBOSE -eq 1 ] && log_message "Ignoring file: $file (matches pattern $pattern)"
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Function to process files in a directory
 process_directory() {
     local source="$1"
@@ -128,6 +153,11 @@ process_directory() {
     
     # Use find to get all regular files in the directory
     while IFS= read -r -d '' file; do
+        # Skip ignored files
+        if should_ignore "$file"; then
+            continue
+        fi
+        
         # Get clean paths
         local relative_path=$(normalize_path "$file")
         local source_file="$source/$relative_path"
