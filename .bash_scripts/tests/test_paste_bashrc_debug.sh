@@ -106,27 +106,27 @@ failures=0
 # Run setup and show outputs for all versions
 echo "=== Testing verbose dryrun ==="
 setup
-run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "9:0"
+run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "10:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing verbose live ==="
 setup
-run_test "./paste_bashrc_live.sh" "Verbose live" "9:0"
+run_test "./paste_bashrc_live.sh" "Verbose live" "10:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose dryrun ==="
 setup
-run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run" "9:0"
+run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run" "10:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose live ==="
 setup
-run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "10:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose live with custom files ==="
 setup
-run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "10:0"
 failures=$((failures + $?))
 
 setup_lite
