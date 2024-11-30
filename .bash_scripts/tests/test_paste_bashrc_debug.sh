@@ -97,8 +97,12 @@ add_test_files() {
 }
 
 clean_up_test_files() {
+    # Clean up individual files
     rm -f "$HOME/temp/file1.txt" "$HOME/temp/file2.txt"
+    # Clean up test directory and its contents
     rm -rf "$HOME/temp/test_dir"
+    # Clean up any stray files that might have been created
+    rm -f "$HOME/temp/dir_file1.txt" "$HOME/temp/dir_file2.txt"
 }
 
 # Function to run test with output control
@@ -117,8 +121,10 @@ run_test() {
 # Initialize failure counter
 failures=0
 
-# Run setup and show outputs for all versions
-echo "=== Testing verbose dryrun ==="
+# Start with clean state
+clean_up_test_files
+
+echo -e "\n=== Testing verbose dryrun ==="
 setup
 run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "10:0"
 failures=$((failures + $?))
