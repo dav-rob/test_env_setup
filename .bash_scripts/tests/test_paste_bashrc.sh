@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Debug setting
+DEBUG=false
+
 # Function to verify number of changes
 verify_changes() {
     local output="$1"
@@ -11,9 +14,11 @@ verify_changes() {
     local expected_deletions=$(echo "$expected_changes" | cut -d: -f2)
     
     # Print the full output for debugging
-    echo "Full output for $test_name:"
-    echo "$output"
-    echo "------------------------"
+    if [ "$DEBUG" = true ]; then
+        echo "Full output for $test_name:"
+        echo "$output"
+        echo "------------------------"
+    fi
     
     # Extract the number of updates and deletions from the output
     local updates="0"
@@ -75,24 +80,16 @@ setup() {
 # Run setup and show outputs for all versions
 echo "=== Testing verbose dryrun ==="
 setup
-output=$(./paste_bashrc_dryrun.sh)
-echo "$output"
-verify_changes "$output" "9:0" "Verbose dry-run"
+verify_changes "$(./paste_bashrc_dryrun.sh)" "9:0" "Verbose dry-run"
 
 echo -e "\n=== Testing verbose live ==="
 setup
-output=$(./paste_bashrc_live.sh)
-echo "$output"
-verify_changes "$output" "9:0" "Verbose live"
+verify_changes "$(./paste_bashrc_live.sh)" "9:0" "Verbose live"
 
 echo -e "\n=== Testing non-verbose dryrun ==="
 setup
-output=$(./paste_bashrc_dryrun_nv.sh)
-echo "$output"
-verify_changes "$output" "9:0" "Non-verbose dry-run"
+verify_changes "$(./paste_bashrc_dryrun_nv.sh)" "9:0" "Non-verbose dry-run"
 
 echo -e "\n=== Testing non-verbose live ==="
 setup
-output=$(./paste_bashrc_live_nv.sh)
-echo "$output"
-verify_changes "$output" "9:0" "Non-verbose live"
+verify_changes "$(./paste_bashrc_live_nv.sh)" "9:0" "Non-verbose live"
