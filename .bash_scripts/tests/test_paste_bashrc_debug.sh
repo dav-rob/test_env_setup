@@ -87,6 +87,19 @@ setup_lite() {
     rm -f ~/.backup_last_run
 }
 
+# Add test files for backup testing
+add_test_files() {
+    mkdir -p "$HOME/temp/test_dir"
+    touch "$HOME/temp/file1.txt"
+    touch "$HOME/temp/file2.txt"
+    touch "$HOME/temp/test_dir/dir_file1.txt"
+    touch "$HOME/temp/test_dir/dir_file2.txt"
+}
+
+clean_up_test_files() {
+    rm -rf "$HOME/temp"
+}
+
 # Function to run test with output control
 run_test() {
     local script="$1"
@@ -136,13 +149,23 @@ failures=$((failures + $?))
 unset DR_BACKUP_FILES
 
 setup_lite
+add_test_files
 export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file1.txt,$HOME/temp/file2.txt,$HOME/temp/test_dir/"
 run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with additional files" "4:0"
 failures=$((failures + $?))
 unset DR_BACKUP_FILES
 
-# Clean up temp test files
+setup_lite
+# Append text to file2.txt and remove file1.txt and dir_file1.txt from backup
+echo "Updated content" >> "$HOME/temp/file2.txt"
+export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file2.txt,$HOME/temp/test_dir/dir_file2.txt"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with updates and deletions" "1:2"
+failures=$((failures + $?))
+unset DR_BACKUP_FILES
+
+# Clean up
 setup
+clean_up_test_files
 
 # Report results
 echo -e "\n"
