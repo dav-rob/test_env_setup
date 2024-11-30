@@ -97,7 +97,8 @@ add_test_files() {
 }
 
 clean_up_test_files() {
-    rm -rf "$HOME/temp"
+    rm -f "$HOME/temp/file1.txt" "$HOME/temp/file2.txt"
+    rm -rf "$HOME/temp/test_dir"
 }
 
 # Function to run test with output control
