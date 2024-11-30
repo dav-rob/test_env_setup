@@ -82,19 +82,30 @@ setup() {
     rm -f ~/.backup_last_run
 }
 
+# Function to run test with output control
+run_test() {
+    local script="$1"
+    local test_name="$2"
+    if [ "$DEBUG" = true ]; then
+        verify_changes "$($script)" "9:0" "$test_name"
+    else
+        verify_changes "$($script 2>/dev/null)" "9:0" "$test_name"
+    fi
+}
+
 # Run setup and show outputs for all versions
 echo "=== Testing verbose dryrun ==="
 setup
-verify_changes "$(./paste_bashrc_dryrun.sh)" "9:0" "Verbose dry-run"
+run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run"
 
 echo -e "\n=== Testing verbose live ==="
 setup
-verify_changes "$(./paste_bashrc_live.sh)" "9:0" "Verbose live"
+run_test "./paste_bashrc_live.sh" "Verbose live"
 
 echo -e "\n=== Testing non-verbose dryrun ==="
 setup
-verify_changes "$(./paste_bashrc_dryrun_nv.sh)" "9:0" "Non-verbose dry-run"
+run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run"
 
 echo -e "\n=== Testing non-verbose live ==="
 setup
-verify_changes "$(./paste_bashrc_live_nv.sh)" "9:0" "Non-verbose live"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live"
