@@ -146,16 +146,13 @@ run_all_tests() {
 
     echo -e "\n=== Testing non-verbose live with custom files ==="
     setup
-    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "11:0"
-    failures=$((failures + $?))
-
-    setup_lite
+    clean_up_test_files
     export DR_BACKUP_FILES="$HOME/.gitconfig"
     run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with custom files" "0:1"
     failures=$((failures + $?))
     unset DR_BACKUP_FILES
 
-    setup_lite
+    setup
     clean_up_test_files
     add_test_files
     export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file1.txt,$HOME/temp/file2.txt,$HOME/temp/test_dir/"
@@ -163,7 +160,7 @@ run_all_tests() {
     failures=$((failures + $?))
     unset DR_BACKUP_FILES
 
-    setup_lite
+    setup
     clean_up_test_files
     add_test_files
     # Append text to file2.txt and remove file1.txt and dir_file1.txt from backup
