@@ -82,14 +82,20 @@ setup() {
     rm -f ~/.backup_last_run
 }
 
+# Lightweight setup that only resets the last run counter
+setup_lite() {
+    rm -f ~/.backup_last_run
+}
+
 # Function to run test with output control
 run_test() {
     local script="$1"
     local test_name="$2"
+    local expected_changes="$3"
     if [ "$DEBUG" = true ]; then
-        verify_changes "$($script)" "9:0" "$test_name"
+        verify_changes "$($script)" "$expected_changes" "$test_name"
     else
-        verify_changes "$($script 2>/dev/null)" "9:0" "$test_name"
+        verify_changes "$($script 2>/dev/null)" "$expected_changes" "$test_name"
     fi
     return $?  # Return verify_changes result (0 for pass, 1 for fail)
 }
@@ -100,23 +106,34 @@ failures=0
 # Run setup and show outputs for all versions
 echo "=== Testing verbose dryrun ==="
 setup
-run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run"
+run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "9:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing verbose live ==="
 setup
-run_test "./paste_bashrc_live.sh" "Verbose live"
+run_test "./paste_bashrc_live.sh" "Verbose live" "9:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose dryrun ==="
 setup
-run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run"
+run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run" "9:0"
 failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose live ==="
 setup
-run_test "./paste_bashrc_live_nv.sh" "Non-verbose live"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
 failures=$((failures + $?))
+
+echo -e "\n=== Testing non-verbose live with custom files ==="
+setup
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
+failures=$((failures + $?))
+
+setup_lite
+export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with custom files" "0:1"
+failures=$((failures + $?))
+unset DR_BACKUP_FILES
 
 # Report results
 echo -e "\n"
