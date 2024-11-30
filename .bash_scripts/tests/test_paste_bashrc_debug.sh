@@ -3,6 +3,9 @@
 # Debug setting
 DEBUG=true
 
+# Source common test code
+source test_paste_bashrc_common.sh
+
 # Function to verify number of changes
 verify_changes() {
     local output="$1"
