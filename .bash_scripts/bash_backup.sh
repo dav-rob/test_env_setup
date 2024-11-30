@@ -55,32 +55,13 @@ log_message() {
 # Function to normalize path separators and remove ./ prefix
 normalize_path() {
     local path="$1"
-    local preserve_root="$2"
-    
     # First normalize slashes and handle . and ..
     path=$(echo "$path" | sed -e 's#/\+#/#g' -e 's#/\./\?#/#g' -e 's#\(/[^/]\+\)/\.\./\?#\1#g')
     # Then remove leading ./
     path=${path#./}
     # Remove trailing / if present
     path=${path%/}
-    
-    # If preserve_root is true and path was absolute, add leading /
-    if [ "$preserve_root" = "true" ] && [[ "$1" = /* ]]; then
-        path="/$path"
-    fi
-    
     echo "$path"
-}
-
-# Function to join paths without double slashes
-join_paths() {
-    local path1=$(normalize_path "$1" "true")
-    local path2=$(normalize_path "$2")
-    if [[ "$path1" = /* ]]; then
-        echo "$path1/$path2"
-    else
-        echo "$path1/$path2"
-    fi
 }
 
 # Create backup directory if it doesn't exist
@@ -94,11 +75,11 @@ get_backup_path() {
     if [ -d "$source" ]; then
         local relative_path="${source#$HOME/}"
         relative_path=$(normalize_path "$relative_path")
-        echo "$(join_paths "$BACKUP_DIR" "$relative_path")"
+        echo "$BACKUP_DIR/$relative_path"
     else
         # For files, strip all directory prefixes
         local filename=$(basename "$source")
-        echo "$(join_paths "$BACKUP_DIR" "$filename")"
+        echo "$BACKUP_DIR/$filename"
     fi
 }
 
@@ -142,9 +123,9 @@ process_directory() {
     # Use find to get all regular files in the directory
     while IFS= read -r -d '' file; do
         # Get clean paths
-        file=$(normalize_path "$file")
-        local source_file=$(join_paths "$source" "$file")
-        local dest_file=$(join_paths "$dest" "$file")
+        local relative_path=$(normalize_path "${file#$source/}")
+        local source_file="$source/$relative_path"
+        local dest_file="$dest/$relative_path"
         
         if files_differ "$source_file" "$dest_file"; then
             if [ $in_dry_run -eq 1 ]; then
@@ -158,7 +139,7 @@ process_directory() {
             fi
             changes_detected=1
         fi
-    done < <(cd "$source" && find . -type f -print0)
+    done < <(find "$source" -type f -print0)
     
     if [ $changes_detected -eq 1 ]; then
         ((DIR_CHANGES++))
@@ -178,12 +159,12 @@ check_deletions() {
             local dir_name=$(normalize_path "${item#$HOME/}")
             while IFS= read -r -d '' file; do
                 # Get clean paths relative to the directory
-                local file_path=$(normalize_path "$file")
+                local relative_path=$(normalize_path "${file#$item/}")
                 # Add the directory prefix to match backup structure
-                local relative_path=$(join_paths "$dir_name" "$file_path")
-                current_paths+=("$relative_path")
-                [ $VERBOSE -eq 1 ] && log_message "Adding to current paths: $relative_path"
-            done < <(cd "$item" && find . -type f -print0)
+                local backup_path="$dir_name/$relative_path"
+                current_paths+=("$backup_path")
+                [ $VERBOSE -eq 1 ] && log_message "Adding to current paths: $backup_path"
+            done < <(find "$item" -type f -print0)
         else
             current_files+=("$(basename "$item")")
         fi
@@ -197,7 +178,7 @@ check_deletions() {
         fi
 
         # Get clean paths relative to backup directory
-        local relative_path=$(normalize_path "$file")
+        local relative_path=$(normalize_path "${file#$BACKUP_DIR/}")
         local basename=$(basename "$file")
         local found=0
 
@@ -224,12 +205,12 @@ check_deletions() {
                 ((FILE_DELETIONS++))
             else
                 [ $VERBOSE -eq 1 ] && log_message "Deleting file: $relative_path"
-                rm -f "$(join_paths "$BACKUP_DIR" "$relative_path")"
+                rm -f "$file"
                 ((FILE_DELETIONS++))
             fi
             CHANGES_MADE=1
         fi
-    done < <(cd "$BACKUP_DIR" && find . -type f -print0)
+    done < <(find "$BACKUP_DIR" -type f -print0)
 }
 
 # Function to backup a file or directory
