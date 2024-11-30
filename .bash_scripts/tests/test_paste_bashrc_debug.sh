@@ -135,6 +135,15 @@ run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with custom files" "0:1"
 failures=$((failures + $?))
 unset DR_BACKUP_FILES
 
+setup_lite
+export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file1.txt,$HOME/temp/file2.txt,$HOME/temp/test_dir/"
+run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with additional files" "4:0"
+failures=$((failures + $?))
+unset DR_BACKUP_FILES
+
+# Clean up temp test files
+setup
+
 # Report results
 echo -e "\n"
 if [ $failures -eq 0 ]; then
