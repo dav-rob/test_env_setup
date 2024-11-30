@@ -91,21 +91,38 @@ run_test() {
     else
         verify_changes "$($script 2>/dev/null)" "9:0" "$test_name"
     fi
+    return $?  # Return verify_changes result (0 for pass, 1 for fail)
 }
+
+# Initialize failure counter
+failures=0
 
 # Run setup and show outputs for all versions
 echo "=== Testing verbose dryrun ==="
 setup
 run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run"
+failures=$((failures + $?))
 
 echo -e "\n=== Testing verbose live ==="
 setup
 run_test "./paste_bashrc_live.sh" "Verbose live"
+failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose dryrun ==="
 setup
 run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run"
+failures=$((failures + $?))
 
 echo -e "\n=== Testing non-verbose live ==="
 setup
 run_test "./paste_bashrc_live_nv.sh" "Non-verbose live"
+failures=$((failures + $?))
+
+# Report results
+echo -e "\n"
+if [ $failures -eq 0 ]; then
+    echo "All tests passed"
+else
+    echo "$failures tests failed"
+fi
+exit $failures
