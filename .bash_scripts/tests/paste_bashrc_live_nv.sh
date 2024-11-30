@@ -2,25 +2,26 @@
 #  Daily Backup  #
 ##################
 
-# Test environment configuration
-BACKUP_DIR="/Users/davidroberts/projects/backup/test_env/test_env_setup"
-TEMP_DIR="$HOME/temp"
-
-# Files to backup - use environment variable if set, otherwise use default
-if [ -n "$DR_BACKUP_FILES" ]; then
-    FILES_STRING="$DR_BACKUP_FILES"
-else
-    # Default files to backup
-    FILES=(
-        "$HOME/.bashrc"
-        "$HOME/.gitconfig"
-        "$HOME/.bash_scripts/" 
-    )
-    # Convert array to comma-separated string
-    FILES_STRING=$(IFS=,; echo "${FILES[*]}")
-fi
-
 check_daily_backup() {
+    # Test environment configuration
+    BACKUP_DIR="/Users/davidroberts/projects/backup/test_env/test_env_setup"
+    TEMP_DIR="$HOME/temp"
+
+    # Files to backup - use environment variable if set, otherwise use default
+    if [ -n "$DR_BACKUP_FILES" ]; then
+        FILES_STRING="$DR_BACKUP_FILES"
+    else
+        # Default files to backup
+        FILES=(
+            "$HOME/.bashrc"
+            "$HOME/.gitconfig"
+            "$HOME/.bash_scripts/" 
+        )
+        # Convert array to comma-separated string
+        FILES_STRING=$(IFS=,; echo "${FILES[*]}")
+    fi
+
+
     local last_run_file="$HOME/.backup_last_run"
     local current_time=$(date +%s)  # Current time in seconds
     local one_day_seconds=$((24 * 60 * 60))  # One day in seconds
