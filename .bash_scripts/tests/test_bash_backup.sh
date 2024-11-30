@@ -102,22 +102,22 @@ run_tests() {
     
     # Test 1.1: Verbose dry-run push
     echo "Running Test 1.1: Verbose dry-run push..."
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "3" "Verbose dry-run" || test_failed=1  # Expect 3 files (2 standalone + 1 in directory)
     
     # Test 1.2: Non-verbose dry-run push
     echo "Running Test 1.2: Non-verbose dry-run push..."
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "3" "Non-verbose dry-run" || test_failed=1  # Expect 3 files
     
     # Test 1.3: Verbose live push
     echo "Running Test 1.3: Verbose live push..."
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "3" "Verbose live push" || test_failed=1  # Expect 3 files
     
     # Test 1.4: Non-verbose live push (should show no changes as files are already backed up)
     echo "Running Test 1.4: Non-verbose live push..."
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Non-verbose live push" || test_failed=1
 
     # Test 2: New file in root level
@@ -127,19 +127,19 @@ run_tests() {
     FILES_STRING=$(IFS=,; echo "${FILES[*]}")
 
     # Test 2.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New root file - Verbose dry-run" || test_failed=1
 
     # Test 2.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New root file - Non-verbose dry-run" || test_failed=1
 
     # Test 2.3: Non-verbose live push
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New root file - Non-verbose live push" || test_failed=1
 
     # Test 2.4: Verbose live push (should show no changes)
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "New root file - Verbose live push" || test_failed=1
 
     # Test 3: New file in subdirectory
@@ -147,19 +147,19 @@ run_tests() {
     echo "New subdir content" > "$TEMP_DIR/testbackupdir1/testbackupdir1_file2.txt"
 
     # Test 3.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New subdir file - Verbose dry-run" || test_failed=1
 
     # Test 3.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New subdir file - Non-verbose dry-run" || test_failed=1
 
     # Test 3.3: Verbose live push
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "New subdir file - Verbose live push" || test_failed=1
 
     # Test 3.4: Non-verbose live push (should show no changes)
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "New subdir file - Non-verbose live push" || test_failed=1
 
     # Test 4: Modified file in root level
@@ -167,19 +167,19 @@ run_tests() {
     echo "Modified root content" > "$TEMP_DIR/testbackupfile1.txt"
 
     # Test 4.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified root file - Verbose dry-run" || test_failed=1
 
     # Test 4.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified root file - Non-verbose dry-run" || test_failed=1
 
     # Test 4.3: Non-verbose live push
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified root file - Non-verbose live push" || test_failed=1
 
     # Test 4.4: Verbose live push (should show no changes)
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Modified root file - Verbose live push" || test_failed=1
 
     # Test 5: Modified file in subdirectory
@@ -187,19 +187,19 @@ run_tests() {
     echo "Modified subdir content" > "$TEMP_DIR/testbackupdir1/testbackupdir1_file1.txt"
 
     # Test 5.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified subdir file - Verbose dry-run" || test_failed=1
 
     # Test 5.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified subdir file - Non-verbose dry-run" || test_failed=1
 
     # Test 5.3: Verbose live push
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Modified subdir file - Verbose live push" || test_failed=1
 
     # Test 5.4: Non-verbose live push (should show no changes)
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Modified subdir file - Non-verbose live push" || test_failed=1
 
     # Test 6: New folder with two files
@@ -211,19 +211,19 @@ run_tests() {
     FILES_STRING=$(IFS=,; echo "${FILES[*]}")
 
     # Test 6.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "New folder with files - Verbose dry-run" || test_failed=1
 
     # Test 6.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "New folder with files - Non-verbose dry-run" || test_failed=1
 
     # Test 6.3: Verbose live push
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "New folder with files - Verbose live push" || test_failed=1
 
     # Test 6.4: Non-verbose live push (should show no changes)
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "New folder with files - Non-verbose live push" || test_failed=1
 
     # Test 7: Remove root level file
@@ -233,19 +233,19 @@ run_tests() {
     FILES_STRING=$(IFS=,; echo "${FILES[*]}")
 
     # Test 7.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove root file - Verbose dry-run" "1" || test_failed=1
 
     # Test 7.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove root file - Non-verbose dry-run" "1" || test_failed=1
 
     # Test 7.3: Non-verbose live push
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove root file - Non-verbose live push" "1" || test_failed=1
 
     # Test 7.4: Verbose live push (should show no changes)
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Remove root file - Verbose live push" || test_failed=1
 
     # Test 8: Remove file from testbackupdir1
@@ -253,19 +253,19 @@ run_tests() {
     rm "$TEMP_DIR/testbackupdir1/testbackupdir1_file2.txt"
 
     # Test 8.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove subdir file - Verbose dry-run" "1" || test_failed=1
 
     # Test 8.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove subdir file - Non-verbose dry-run" "1" || test_failed=1
 
     # Test 8.3: Verbose live push
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "1" "Remove subdir file - Verbose live push" "1" || test_failed=1
 
     # Test 8.4: Non-verbose live push (should show no changes)
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Remove subdir file - Non-verbose live push" || test_failed=1
 
     # Test 9: Remove folder with two files
@@ -275,19 +275,19 @@ run_tests() {
     FILES_STRING=$(IFS=,; echo "${FILES[*]}")
 
     # Test 9.1: Verbose dry-run
-    output=$(./bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "Remove folder - Verbose dry-run" "2" || test_failed=1
 
     # Test 9.2: Non-verbose dry-run
-    output=$(./bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -d --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "Remove folder - Non-verbose dry-run" "2" || test_failed=1
 
     # Test 9.3: Non-verbose live push
-    output=$(./bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "2" "Remove folder - Non-verbose live push" "2" || test_failed=1
 
     # Test 9.4: Verbose live push (should show no changes)
-    output=$(./bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
+    output=$(../bash_backup.sh -v --backup-dir "$BACKUP_DIR" --files "$FILES_STRING")
     verify_changes "$output" "0" "Remove folder - Verbose live push" || test_failed=1
 
     return $test_failed
