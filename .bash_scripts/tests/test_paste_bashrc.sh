@@ -71,8 +71,13 @@ verify_changes() {
 setup() {
     cd /Users/davidroberts/projects/backup/test_env/test_env_setup
     rm -rf .bash_scripts/ .bashrc .gitconfig 
-    git commit -m "Cleanup test files"
-    git push -u origin main
+    if [ "$DEBUG" = true ]; then
+        git commit -m "Cleanup test files"
+        git push -u origin main
+    else
+        git commit -m "Cleanup test files" &>/dev/null
+        git push -u origin main &>/dev/null
+    fi
     cd ~/.bash_scripts/tests
     rm -f ~/.backup_last_run
 }
