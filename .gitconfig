@@ -1,0 +1,24 @@
+[user]
+	name = David Roberts
+	email = david@entendior.com
+[core]
+	excludesfile = /Users/davidroberts/.gitignore_global
+[merge]
+   tool = meld
+[mergetool "meld"]
+   trustExitCode = true
+[mergetool]
+   keepBackup = false
+[commit]
+	template = /Users/davidroberts/.stCommitMsg
+[apply]
+	whitespace = nowarn
+[color]
+	ui = true
+[alias]
+	co = checkout
+	br = branch
+	ct = commit
+	st = status
+[init]
+	defaultBranch = main
