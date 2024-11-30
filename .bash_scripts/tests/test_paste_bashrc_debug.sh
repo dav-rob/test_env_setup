@@ -71,6 +71,7 @@ verify_changes() {
 setup() {
     cd /Users/davidroberts/projects/backup/test_env/test_env_setup
     rm -rf .bash_scripts/ .bashrc .gitconfig 
+    rm -rf *
     if [ "$DEBUG" = true ]; then
         git commit -m "Cleanup test files"
         git push -u origin main
@@ -85,6 +86,24 @@ setup() {
 # Lightweight setup that only resets the last run counter
 setup_lite() {
     rm -f ~/.backup_last_run
+}
+
+# Add test files for backup testing
+add_test_files() {
+    mkdir -p "$HOME/temp/test_dir"
+    touch "$HOME/temp/file1.txt"
+    touch "$HOME/temp/file2.txt"
+    touch "$HOME/temp/test_dir/dir_file1.txt"
+    touch "$HOME/temp/test_dir/dir_file2.txt"
+}
+
+clean_up_test_files() {
+    # Clean up individual files
+    rm -f "$HOME/temp/file1.txt" "$HOME/temp/file2.txt"
+    # Clean up test directory and its contents
+    rm -rf "$HOME/temp/test_dir"
+    # Clean up any stray files that might have been created
+    rm -f "$HOME/temp/dir_file1.txt" "$HOME/temp/dir_file2.txt"
 }
 
 # Function to run test with output control
@@ -107,34 +126,52 @@ run_all_tests() {
     # Run setup and show outputs for all versions
     echo "=== Testing verbose dryrun ==="
     setup
-    run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "9:0"
+    run_test "./paste_bashrc_dryrun.sh" "Verbose dry-run" "11:0"
     failures=$((failures + $?))
 
     echo -e "\n=== Testing verbose live ==="
     setup
-    run_test "./paste_bashrc_live.sh" "Verbose live" "9:0"
+    run_test "./paste_bashrc_live.sh" "Verbose live" "11:0"
     failures=$((failures + $?))
 
     echo -e "\n=== Testing non-verbose dryrun ==="
     setup
-    run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run" "9:0"
+    run_test "./paste_bashrc_dryrun_nv.sh" "Non-verbose dry-run" "11:0"
     failures=$((failures + $?))
 
     echo -e "\n=== Testing non-verbose live ==="
     setup
-    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
+    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "11:0"
     failures=$((failures + $?))
 
     echo -e "\n=== Testing non-verbose live with custom files ==="
     setup
-    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "9:0"
+    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live" "11:0"
     failures=$((failures + $?))
 
     setup_lite
     export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/"
     run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with custom files" "0:1"
     failures=$((failures + $?))
+
+    setup_lite
+    add_test_files
+    export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file1.txt,$HOME/temp/file2.txt,$HOME/temp/test_dir/"
+    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with additional files" "4:0"
+    failures=$((failures + $?))
+
+    setup_lite
+    # Append text to file2.txt and remove file1.txt and dir_file1.txt from backup
+    echo "Updated content" >> "$HOME/temp/file2.txt"
+    export DR_BACKUP_FILES="$HOME/.gitconfig,$HOME/.bash_scripts/,$HOME/temp/file2.txt,$HOME/temp/test_dir/dir_file2.txt"
+    run_test "./paste_bashrc_live_nv.sh" "Non-verbose live with updates and deletions" "2:2"
+    failures=$((failures + $?))
+  
+
+    # Clean up
     unset DR_BACKUP_FILES
+    setup
+    clean_up_test_files
 
     # Report results
     echo -e "\n"
