@@ -14,7 +14,7 @@ check_daily_backup() {
         # Default files to backup
         FILES=(
             "$HOME/.bashrc"
-            "$HOME/Library/Application Support/Code/User/keybindings.json"
+            "$HOME/.gitconfig"
             "$HOME/.bash_scripts/" 
         )
         # Convert array to comma-separated string
